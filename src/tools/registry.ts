@@ -1,114 +1,86 @@
 import type { ShopifyTool } from "../lib/toolUtils.js";
 
-// Product tools
+// ─────────────────────────────────────────────────────────────────────
+// READ-ONLY TOOL REGISTRY
+//
+// All mutating tools (create/update/delete/cancel/refund/merge/
+// setMetafields/deleteMetafields/manageTags/setInventoryQuantities/
+// draft-order completion/fulfillment creation/etc.) have been removed
+// from this registry so the MCP server cannot write to the store even
+// if the LLM is coerced into trying (e.g. via prompt injection in a
+// product description or customer note).
+//
+// The tool *files* still exist on disk under src/tools/, they are just
+// not imported or registered. To re-enable a specific write tool,
+// uncomment its import and its entry in the `tools` array below, and
+// make sure the corresponding `write_*` scope is granted on the
+// Shopify custom app.
+//
+// Belt-and-suspenders: also configure the Shopify custom app with
+// ONLY read_* scopes. Then even a bypass at this layer cannot execute
+// writes — Shopify will reject them at the API.
+// ─────────────────────────────────────────────────────────────────────
+
+// Product reads
 import { getProducts } from "./getProducts.js";
 import { getProductById } from "./getProductById.js";
-import { createProduct } from "./createProduct.js";
-import { updateProduct } from "./updateProduct.js";
-import { deleteProduct } from "./deleteProduct.js";
-import { manageProductVariants } from "./manageProductVariants.js";
-import { deleteProductVariants } from "./deleteProductVariants.js";
-import { manageProductOptions } from "./manageProductOptions.js";
 
-// Order tools
+// Order reads
 import { getOrders } from "./getOrders.js";
 import { getOrderById } from "./getOrderById.js";
-import { updateOrder } from "./updateOrder.js";
-import { createDraftOrder } from "./createDraftOrder.js";
-import { completeDraftOrder } from "./completeDraftOrder.js";
-import { orderCancel } from "./orderCancel.js";
-import { orderCloseOpen } from "./orderCloseOpen.js";
-import { orderMarkAsPaid } from "./orderMarkAsPaid.js";
-import { createFulfillment } from "./createFulfillment.js";
-import { createRefund } from "./createRefund.js";
 
-// Customer tools
+// Customer reads
 import { getCustomers } from "./getCustomers.js";
 import { getCustomerById } from "./getCustomerById.js";
 import { getCustomerOrders } from "./getCustomerOrders.js";
-import { createCustomer } from "./createCustomer.js";
-import { updateCustomer } from "./updateCustomer.js";
-import { deleteCustomer } from "./deleteCustomer.js";
-import { mergeCustomers } from "./mergeCustomers.js";
-import { manageCustomerAddress } from "./manageCustomerAddress.js";
 
-// Metafield tools
+// Metafield reads
 import { getMetafields } from "./getMetafields.js";
-import { setMetafields } from "./setMetafields.js";
-import { deleteMetafields } from "./deleteMetafields.js";
 
-// Convenience / cross-resource tools
-import { manageTags } from "./manageTags.js";
-import { setInventoryQuantities } from "./setInventoryQuantities.js";
-
-// Configuration & discovery tools
+// Configuration & discovery reads
 import { getShopInfo } from "./getShopInfo.js";
 import { getMetafieldDefinitions } from "./getMetafieldDefinitions.js";
 import { getLocations } from "./getLocations.js";
 import { getMarkets } from "./getMarkets.js";
 import { getCollections } from "./getCollections.js";
+import { getCollectionById } from "./getCollectionById.js";
 
-// Enhanced order & fulfillment tools
+// Enhanced order & fulfillment reads
 import { getOrderTransactions } from "./getOrderTransactions.js";
 import { getFulfillmentOrders } from "./getFulfillmentOrders.js";
 import { getOrderRefundDetails } from "./getOrderRefundDetails.js";
-import { getCollectionById } from "./getCollectionById.js";
 
-// Inventory & pricing read tools
+// Inventory & pricing reads
 import { getInventoryLevels } from "./getInventoryLevels.js";
 import { getInventoryItems } from "./getInventoryItems.js";
 import { getPriceLists } from "./getPriceLists.js";
 import { getProductVariantsDetailed } from "./getProductVariantsDetailed.js";
 
 export const tools: ShopifyTool[] = [
-  // Products (8)
+  // Products (2)
   getProducts,
   getProductById,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  manageProductVariants,
-  deleteProductVariants,
-  manageProductOptions,
-  // Orders (10)
+  // Orders (2)
   getOrders,
   getOrderById,
-  updateOrder,
-  createDraftOrder,
-  completeDraftOrder,
-  orderCancel,
-  orderCloseOpen,
-  orderMarkAsPaid,
-  createFulfillment,
-  createRefund,
-  // Customers (8)
+  // Customers (3)
   getCustomers,
   getCustomerById,
   getCustomerOrders,
-  createCustomer,
-  updateCustomer,
-  deleteCustomer,
-  mergeCustomers,
-  manageCustomerAddress,
-  // Metafields (3)
+  // Metafields (1)
   getMetafields,
-  setMetafields,
-  deleteMetafields,
-  // Convenience (2)
-  manageTags,
-  setInventoryQuantities,
-  // Configuration & discovery (5)
+  // Configuration & discovery (6)
   getShopInfo,
   getMetafieldDefinitions,
   getLocations,
   getMarkets,
   getCollections,
-  // Enhanced order & fulfillment (4)
+  getCollectionById,
+  // Enhanced order & fulfillment (3)
   getOrderTransactions,
   getFulfillmentOrders,
   getOrderRefundDetails,
-  getCollectionById,
-  // Inventory & pricing reads (4)
+  // Inventory & pricing (4)
   getInventoryLevels,
   getInventoryItems,
   getPriceLists,
